@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\V1\CompleteTaskController;
 use App\Http\Controllers\Api\V1\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\Console\Command\CompleteCommand;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 // Route::apiResource('/v1/tasks', TaskController::class);
 Route::prefix('v1')->group(function () {
     Route::apiResource('/tasks', TaskController::class);
+    Route::patch('/tasks/{task}/complete', CompleteTaskController::class);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

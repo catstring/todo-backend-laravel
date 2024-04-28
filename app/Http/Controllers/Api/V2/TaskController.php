@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V2;
 
+use App\Models\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
-use App\Models\Task;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
@@ -15,7 +16,9 @@ class TaskController extends Controller
      */
     public function index()
     {
-        return TaskResource::collection(Task::all());
+        Gate::authorize('viewAny', Task::class);
+
+        return TaskResource::collection(auth()->user()->tasks()->get());
     }
 
     /**
@@ -23,7 +26,9 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        $task = Task::create($request->validated());
+        Gate::authorize('create', Task::class);
+
+        $task = $request->user()->tasks()->create($request->validated());
 
         return TaskResource::make($task);
     }
@@ -33,6 +38,8 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
+        Gate::authorize('view', $task);
+
         return TaskResource::make($task);
     }
 
@@ -41,6 +48,8 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
+        Gate::authorize('update', $task);
+
         $task->update($request->validated());
 
         return TaskResource::make($task);
@@ -51,6 +60,8 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        Gate::authorize('delete', $task);
+
         $task->delete();
 
         return response()->noContent();

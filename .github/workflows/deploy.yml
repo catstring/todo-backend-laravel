@@ -16,11 +16,11 @@ jobs:
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          ssh-private-key: ${{ secrets.EC2_NEWKEY }}
 
       - name: Ensure target directory exists and adjust permissions
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@13.211.228.65 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ec2-user@13.55.2.38 << 'EOF'
             sudo mkdir -p /var/www/todo-app-back-laravel
             sudo chown -R ec2-user:ec2-user /var/www/todo-app-back-laravel
             sudo chmod -R 775 /var/www/todo-app-back-laravel
@@ -28,18 +28,18 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          scp -r -o StrictHostKeyChecking=no * .[!.]* ec2-user@13.211.228.65:/var/www/todo-app-back-laravel
+          scp -r -o StrictHostKeyChecking=no * .[!.]* ec2-user@13.55.2.38:/var/www/todo-app-back-laravel
 
       - name: Revert ownership to nginx and adjust permissions
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@13.211.228.65 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ec2-user@13.55.2.38 << 'EOF'
             sudo chown -R nginx:nginx /var/www/todo-app-back-laravel
             sudo chmod -R 755 /var/www/todo-app-back-laravel
           EOF
 
       - name: Install dependencies and run artisan commands
         run: |
-          ssh -t -o StrictHostKeyChecking=no ec2-user@13.211.228.65 << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no ec2-user@13.55.2.38 << 'EOF'
             sudo -u nginx bash -c "
               cd /var/www/todo-app-back-laravel
               curl -sS https://getcomposer.org/installer | php

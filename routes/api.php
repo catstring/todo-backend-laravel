@@ -8,11 +8,11 @@ use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\V1\CompleteTaskController;
 
-Route::prefix('auth')->group(function () {
-    Route::post('/login', LoginController::class);
-    Route::post('/logout', LogoutController::class)->middleware('auth:sanctum');
-    Route::post('/register', RegisterController::class);
-});
+// Route::prefix('auth')->group(function () {
+//     Route::post('/login', LoginController::class);
+//     Route::post('/logout', LogoutController::class)->middleware('auth:sanctum');
+//     Route::post('/register', RegisterController::class);
+// });
 
 require __DIR__ . '/api/v1.php';
 require __DIR__ . '/api/v2.php';

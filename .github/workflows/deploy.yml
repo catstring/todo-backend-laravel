@@ -28,7 +28,7 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" * ec2-user@3.107.56.101:todo-app-back-laravel
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" * ec2-user@3.107.56.101:/var/www/todo-app-back-laravel
 
       - name: Revert ownership to nginx and adjust permissions
         run: |

@@ -1,4 +1,4 @@
-name: Deploy Laravel to EC2
+name: deploy
 
 on:
   push:
@@ -10,44 +10,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.EC2_NEWKEY }}
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.EC2_NEWKEY }}
+    - name: Ensure target directory exists and adjust permissions
+      run: |
+        ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
+        sudo mkdir -p /var/www/todo-app-back-laravel
+        sudo chown -R ec2-user:ec2-user /var/www/todo-app-back-laravel
+        sudo chmod -R 775 /var/www/todo-app-back-laravel
+        EOF
 
-      - name: Ensure target directory exists and adjust permissions
-        run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
-            sudo mkdir -p /var/www/todo-app-back-laravel
-            sudo chown -R ec2-user:ec2-user /var/www/todo-app-back-laravel
-            sudo chmod -R 775 /var/www/todo-app-back-laravel
-          EOF
+    - name: Clone or pull latest code
+      run: |
+        ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
+        if [ ! -d "/var/www/todo-app-back-laravel/.git" ]; then
+          git clone https://github.com/catstring/todo-backend-laravel.git /var/www/todo-app-back-laravel
+        else
+          cd /var/www/todo-app-back-laravel
+          git pull origin master
+        fi
+        EOF
 
-      - name: Copy files to EC2
-        run: |
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" * ec2-user@3.107.56.101:/var/www/todo-app-back-laravel
+    - name: Revert ownership to nginx and adjust permissions
+      run: |
+        ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
+        sudo chown -R nginx:nginx /var/www/todo-app-back-laravel
+        sudo chmod -R 775 /var/www/todo-app-back-laravel
+        EOF
 
-      - name: Revert ownership to nginx and adjust permissions
-        run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
-            sudo chown -R nginx:nginx /var/www/todo-app-back-laravel
-            sudo chmod -R 755 /var/www/todo-app-back-laravel
-          EOF
-
-      - name: Install dependencies and run artisan commands
-        run: |
-          ssh -t -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
-            sudo -u nginx bash -c "
-              cd /var/www/todo-app-back-laravel
-              curl -sS https://getcomposer.org/installer | php
-              sudo mv composer.phar /usr/local/bin/composer
-              composer install --no-dev --optimize-autoloader
-              php artisan migrate --force
-              php artisan cache:clear
-              php artisan config:clear
-              php artisan route:clear
-            "
-          EOF
+    - name: Install dependencies and run artisan commands
+      run: |
+        ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
+        sudo su
+        cd /var/www/todo-app-back-laravel
+        curl -sS https://getcomposer.org/installer | php
+        sudo mv composer.phar /usr/local/bin/composer
+        composer install --no-dev --optimize-autoloader
+        php artisan migrate --force
+        php artisan cache:clear
+        php artisan config:clear
+        php artisan route:clear
+        EOF

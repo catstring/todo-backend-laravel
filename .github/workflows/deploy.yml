@@ -37,17 +37,17 @@ jobs:
             sudo chmod -R 755 todo-app-back-laravel
           EOF
 
-      - name: Install dependencies and run artisan commands
-        run: |
-          ssh -t -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
-            sudo -u nginx bash -c "
-              cd todo-app-back-laravel
-              curl -sS https://getcomposer.org/installer | php
-              sudo mv composer.phar /usr/local/bin/composer
-              composer install --no-dev --optimize-autoloader
-              php artisan migrate --force
-              php artisan cache:clear
-              php artisan config:clear
-              php artisan route:clear
-            "
-          EOF
+      # - name: Install dependencies and run artisan commands
+      #   run: |
+      #     ssh -t -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
+      #       sudo -u nginx bash -c "
+      #         cd todo-app-back-laravel
+      #         curl -sS https://getcomposer.org/installer | php
+      #         sudo mv composer.phar /usr/local/bin/composer
+      #         composer install --no-dev --optimize-autoloader
+      #         php artisan migrate --force
+      #         php artisan cache:clear
+      #         php artisan config:clear
+      #         php artisan route:clear
+      #       "
+      #     EOF

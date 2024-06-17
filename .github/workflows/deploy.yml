@@ -18,36 +18,13 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_NEWKEY }}
 
-      - name: Ensure target directory exists and adjust permissions
+      - name: do all
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
             sudo mkdir -p todo-app-back-laravel
             sudo chown -R ec2-user:ec2-user todo-app-back-laravel
-            sudo chmod -R 775 todo-app-back-laravel
-          EOF
-
-      - name: Copy files to EC2
-        run: |
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" * ec2-user@13.210.154.160:todo-app-back-laravel
-
-      - name: Revert ownership to nginx and adjust permissions
-        run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
-            sudo chown -R nginx:nginx todo-app-back-laravel
             sudo chmod -R 755 todo-app-back-laravel
+            rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" * ec2-user@13.210.154.160:todo-app-back-laravel
+            sudo chown -R nginx:nginx todo-app-back-laravel
           EOF
 
-      # - name: Install dependencies and run artisan commands
-      #   run: |
-      #     ssh -t -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
-      #       sudo -u nginx bash -c "
-      #         cd todo-app-back-laravel
-      #         curl -sS https://getcomposer.org/installer | php
-      #         sudo mv composer.phar /usr/local/bin/composer
-      #         composer install --no-dev --optimize-autoloader
-      #         php artisan migrate --force
-      #         php artisan cache:clear
-      #         php artisan config:clear
-      #         php artisan route:clear
-      #       "
-      #     EOF

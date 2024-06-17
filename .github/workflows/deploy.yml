@@ -21,10 +21,10 @@ jobs:
       - name: do all
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
-            sudo mkdir -p todo-app-back-laravel
-            sudo chown -R ec2-user:ec2-user todo-app-back-laravel
-            sudo chmod -R 755 todo-app-back-laravel
-            rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" * ec2-user@13.210.154.160:todo-app-back-laravel
-            sudo chown -R nginx:nginx todo-app-back-laravel
+            sudo mkdir -p /var/www/todo-app-back-laravel
+            sudo chown -R ec2-user:ec2-user /var/www/todo-app-back-laravel
+            sudo chmod -R 755 /var/www/todo-app-back-laravel
+            rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" * ec2-user@13.210.154.160:/var/www/todo-app-back-laravel
+            sudo chown -R nginx:nginx /var/www/todo-app-back-laravel
           EOF
 

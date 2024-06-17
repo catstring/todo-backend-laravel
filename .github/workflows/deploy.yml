@@ -17,7 +17,7 @@ jobs:
 
     - name: Ensure target directory exists and adjust permissions
       run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
+        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
         sudo mkdir -p /var/www/todo-app-back-laravel
         sudo chown -R ec2-user:ec2-user /var/www/todo-app-back-laravel
         sudo chmod -R 775 /var/www/todo-app-back-laravel
@@ -25,7 +25,7 @@ jobs:
 
     - name: Clone or pull latest code
       run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
+        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
         if [ ! -d "/var/www/todo-app-back-laravel/.git" ]; then
           git clone git@github.com:catstring/todo-backend-laravel.git /var/www/todo-app-back-laravel
         else
@@ -36,14 +36,14 @@ jobs:
 
     - name: Revert ownership to nginx and adjust permissions
       run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
+        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
         sudo chown -R nginx:nginx /var/www/todo-app-back-laravel
         sudo chmod -R 775 /var/www/todo-app-back-laravel
         EOF
 
     - name: Install dependencies and run artisan commands
       run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@3.107.56.101 << 'EOF'
+        ssh -o StrictHostKeyChecking=no ec2-user@13.210.154.160 << 'EOF'
         sudo su
         cd /var/www/todo-app-back-laravel
         curl -sS https://getcomposer.org/installer | php

@@ -16,11 +16,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/toddo', function () {
+Route::get('/', function () {
     return view('welcome');
 });
 
-Route::prefix('toddo/auth')->group(function(){
+Route::prefix('auth')->group(function(){
     Route::post('/login', LoginController::class)->middleware('guest');
     Route::post('/logout', LogoutController::class);
     Route::post('/register', RegisterController::class)->middleware('guest');

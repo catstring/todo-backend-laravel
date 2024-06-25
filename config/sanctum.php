@@ -62,7 +62,7 @@ return [
     */
 
     'token_prefix' => env('SANCTUM_TOKEN_PREFIX', ''),
-    'prefix' => 'toddo/sanctum',
+    // 'prefix' => 'toddo/sanctum',
 
     /*
     |--------------------------------------------------------------------------
